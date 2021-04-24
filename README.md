@@ -44,13 +44,23 @@ Mise en place de la grammaire (manque le txt).
 
 Mise en place des expressions for, if et des booleans.
 
-==> Regarder pour le txt et continuer les questions
+==> Regarder pour le txt et continuer les questions.
+
+## 24 Avril 2021.
+
+Résolution complète de la grammaire.
+
+Début du reste de l'analyse syntaxique.
+
+- [Interpreteur de Lark](https://pastebin.com/y5rryEvE)
+
+Etant donné que notre code utilisera en partie l'interpreteur déjà présent, autant avoir un moyen de le retrouver facilement. (__ligne 310__)
 
 ## Fin du projet.
 
 - [x] Documentation Lark.
 - [ ] Code Python.
-	- [ ] Lexèmes.
+	- [x] Lexèmes.
 	- [ ] Grammaires.
 - [ ] Rapport.
 - [ ] Tests.

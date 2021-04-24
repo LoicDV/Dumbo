@@ -1,0 +1,43 @@
+programme: txt | txt programme | dumbo_bloc | dumbo_bloc programme
+
+txt: (/[^{]/)*
+
+dumbo_bloc: ( "{{" expression_list "}}" ) | ( "{{" "}}" )
+
+expression_list: expression ";" expression_list | expression ";"
+
+expression: add_expr
+            | sub_expr 
+            | mul_expr 
+            | div_expr 
+            | ("print" string_expression) 
+            | ( "for" VARIABLE "in" (string_list | VARIABLE) "do" expression_list "endfor" ) 
+            | ( VARIABLE ":=" (string_expression | string_list) ) 
+            | ( "if" (BOOLEAN | inf_expr | sup_expr | eq_expr | dif_expr) (OPERATOR bool_expr)* "do" expression_list "endif" )
+
+add_expr: (FLOAT "+" FLOAT) | (INT "+" INT)
+sub_expr: (FLOAT "-" FLOAT) | (INT "-" INT)
+mul_expr: (FLOAT "*" FLOAT) | (INT "*" INT)
+div_expr: (FLOAT "/" FLOAT_DIV) | (INT "/" ("1".."9")+)
+inf_expr: (INT "<" INT)
+sup_expr: (INT ">" INT)
+eq_expr: (INT "=" INT)
+dif_expr: (INT "!=" INT)
+bool_expr: BOOLEAN | inf_expr | sup_expr | eq_expr | dif_expr | bool_expr
+
+string_expression: STRING | VARIABLE | string_expression "." string_expression
+string_list: "(" string_list_interior ")"
+string_list_interior: ( STRING ) | ( STRING "," string_list_interior )
+
+VARIABLE: CNAME
+BOOLEAN: "true" | "false"
+OPERATOR: "or" | "and"
+STRING: ( "'" (WORD | INT) ((" ")* (WORD | INT))* "'" ) | ( "'" "'" )
+FLOAT_DIV: ( "0." ("0")* ("1".."9") INT+ ) | ( ("1".."9") INT* ( "." INT* )? )
+
+%import common.INT
+%import common.FLOAT
+%import common.NUMBER
+%import common.WORD
+%import common.CNAME
+%ignore "[ \n\t]"
