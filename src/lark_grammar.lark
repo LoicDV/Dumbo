@@ -13,7 +13,7 @@ expression: add_expr
             | ("print" string_expression) 
             | ( "for" VARIABLE "in" (string_list | VARIABLE) "do" expression_list "endfor" ) 
             | ( VARIABLE ":=" (string_expression | string_list) ) 
-            | ( "if" (BOOLEAN | inf_expr | sup_expr | eq_expr | dif_expr) (OPERATOR bool_expr)* "do" expression_list "endif" )
+            | if_expr
 
 add_expr: (FLOAT "+" FLOAT) | (INT "+" INT)
 sub_expr: (FLOAT "-" FLOAT) | (INT "-" INT)
@@ -24,6 +24,7 @@ sup_expr: (INT ">" INT)
 eq_expr: (INT "=" INT)
 dif_expr: (INT "!=" INT)
 bool_expr: BOOLEAN | inf_expr | sup_expr | eq_expr | dif_expr | bool_expr
+if_expr: ( "if" (BOOLEAN | inf_expr | sup_expr | eq_expr | dif_expr) (OPERATOR bool_expr)* "do" expression_list "endif" )
 
 string_expression: STRING | VARIABLE | string_expression "." string_expression
 string_list: "(" string_list_interior ")"

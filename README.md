@@ -56,6 +56,19 @@ Début du reste de l'analyse syntaxique.
 
 Etant donné que notre code utilisera en partie l'interpreteur déjà présent, autant avoir un moyen de le retrouver facilement. (__ligne 310__)
 
+## 30 Avril 2021.
+
+Recherche de moyen pour écrire les fonctions + gérer les différentes scopes.
+
+`visit` et `visit_children`, 2 fonctions qu'on doit utiliser pour chercher les différents noeuds.
+
+Utilisation de liste chainée pour gérer les scopes ? \
+Pas de résultat concret donc laissé de coté.
+
+Utilisation d'un objet Scope qui contiendrait un dictionnaire (clé : la variable, valeur : la donnée ) ainsi qu'une liste chainée avec les précédents dictionnaire (permet de faire des pseudo-rollback pour récupérer les données avant d'entrer dans un autre scope qui peuvent être utilisée).
+
+**TODO** Faire le reste des fonctions sans oublier d'inclure l'objet Scope.
+
 ## Fin du projet.
 
 - [x] Documentation Lark.
