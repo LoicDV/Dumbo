@@ -69,6 +69,13 @@ Utilisation d'un objet Scope qui contiendrait un dictionnaire (clé : la variabl
 
 **TODO** Faire le reste des fonctions sans oublier d'inclure l'objet Scope.
 
+## 1 Mai 2021.
+
+Fin du Scope + discussion entre nous pour valider le 30 Avril.
+
+Fin des définitions pour la grammaire. \
+Début des tests sur Moodle.
+
 ## Fin du projet.
 
 - [x] Documentation Lark.

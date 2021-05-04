@@ -1,6 +1,6 @@
 programme: txt | txt programme | dumbo_bloc | dumbo_bloc programme
 
-txt: (/[^{]/)*
+txt: (/[^{]/)+
 
 dumbo_bloc: ( "{{" expression_list "}}" ) | ( "{{" "}}" )
 
@@ -10,35 +10,49 @@ expression: add_expr
             | sub_expr 
             | mul_expr 
             | div_expr 
-            | ("print" string_expression) 
-            | ( "for" VARIABLE "in" (string_list | VARIABLE) "do" expression_list "endfor" ) 
-            | ( VARIABLE ":=" (string_expression | string_list) ) 
+            | print_expr 
+            | for_expr 
+            | assign_expr_var
+            | assign_expr_arith
             | if_expr
 
-add_expr: (FLOAT "+" FLOAT) | (INT "+" INT)
-sub_expr: (FLOAT "-" FLOAT) | (INT "-" INT)
-mul_expr: (FLOAT "*" FLOAT) | (INT "*" INT)
-div_expr: (FLOAT "/" FLOAT_DIV) | (INT "/" ("1".."9")+)
-inf_expr: (INT "<" INT)
-sup_expr: (INT ">" INT)
-eq_expr: (INT "=" INT)
-dif_expr: (INT "!=" INT)
-bool_expr: BOOLEAN | inf_expr | sup_expr | eq_expr | dif_expr | bool_expr
-if_expr: ( "if" (BOOLEAN | inf_expr | sup_expr | eq_expr | dif_expr) (OPERATOR bool_expr)* "do" expression_list "endif" )
+add_expr: (INT "+" INT)
+sub_expr: (INT "-" INT)
+mul_expr: (INT "*" INT)
+div_expr: (INT "/" ("1".."9")+)
+inf_expr: (add_int "<" add_int)
+sup_expr: (add_int ">" add_int)
+eq_expr: (add_int "==" add_int)
+dif_expr: (add_int "!=" add_int)
+
+add_int : mul_int (ADD_OPERATION mul_int)*
+ADD_OPERATION : "+" | "-" 
+mul_int : INT (MUL_OPERATION INT)*
+MUL_OPERATION : "*" | "/"
+
+bool_expr: BOOLEAN | inf_expr | sup_expr | eq_expr | dif_expr | (bool_expr OPERATOR bool_expr)
+
+if_expr: ( "if" bool_expr "do" expression_list "endif" )
+
+for_expr: ( "for" VARIABLE "in" (string_list | VARIABLE) "do" expression_list "endfor" )
+
+print_expr: ("print" string_expression)
+
+assign_expr_arith: ( VARIABLE ":=" (add_expr | sub_expr | mul_expr | div_expr) )
+assign_expr_var: ( VARIABLE ":=" (string_expression | string_list | INT) )
 
 string_expression: STRING | VARIABLE | string_expression "." string_expression
 string_list: "(" string_list_interior ")"
-string_list_interior: ( STRING ) | ( STRING "," string_list_interior )
+string_list_interior: ( STRING ("," STRING)* )
 
 VARIABLE: CNAME
 BOOLEAN: "true" | "false"
 OPERATOR: "or" | "and"
-STRING: ( "'" (WORD | INT) ((" ")* (WORD | INT))* "'" ) | ( "'" "'" )
-FLOAT_DIV: ( "0." ("0")* ("1".."9") INT+ ) | ( ("1".."9") INT* ( "." INT* )? )
+STRING: ( "'" (/[^']/)* "'" )
 
 %import common.INT
 %import common.FLOAT
 %import common.NUMBER
 %import common.WORD
 %import common.CNAME
-%ignore "[ \n\t]"
+%ignore /[ \n\t]/
