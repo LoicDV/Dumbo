@@ -3,7 +3,7 @@ import sys
 from liste_chainee import *
 
 # Librairie Lark.
-from lark import Lark
+from lark import Lark, Token
 from lark import UnexpectedToken
 from lark import tree as Tree
 from lark.visitors import Interpreter
@@ -173,8 +173,12 @@ class OurInterpreter(Interpreter):
     def sup_expr(self, tree):
         print("debug : sup_expr")
         print("-----------------")
-        
         flag = False
+        left_member = 0
+        right_member = 0
+        while(type(tree.children[0]) is not Token and type(tree.children[1]) is not Token):
+            tree.children[0] = self.visit_children(tree.children[0])
+            tree.children[1] = self.visit_children(tree.children[1])
         if tree.children[0].data > tree.children[2].data:
             flag = True
         return flag
@@ -203,13 +207,13 @@ class OurInterpreter(Interpreter):
         print("debug : mul_int")
         print("-----------------")
         
-        mul = tree.children[0].data
-        i = 1
+        mul = tree.children[0].value
+        i = 0
         while tree.children[i] != None :
             if tree.children[i] == "*":
-                mul = mul * tree.children[i+1].data
+                mul = mul * tree.children[i+1].value
             else : 
-                mul = mul / tree.children[i+1].data
+                mul = mul / tree.children[i+1].value
             i += 2
         return mul
         
@@ -272,6 +276,13 @@ class OurInterpreter(Interpreter):
             self.visit_children(liste_expr)
             self.scope.dictio = self.scope.other.head.data
 
+    # Définis le mot assign_expr dans la grammaire.
+    def assign_expr(self, tree):
+        print("debug : assign_expr")
+        print("-----------------")
+        print(tree)
+        self.visit_children(tree)
+
     # Définis le mot assign_expr_var dans la grammaire.
     def assign_expr_var(self, tree):
         print("debug : assign_expr_var")
@@ -281,7 +292,6 @@ class OurInterpreter(Interpreter):
         next_tree = tree.children[1:]
         for elem in next_tree[0].children:
             if isinstance(elem, Tree.Tree):
-                # Tree('string_list_interior', [Token('STRING', "'American History X'"), Tree('string_list_interior', [Token('STRING', "'Snowblind'"), Tree('string_list_interior', [Token('STRING', "'Lake of Fire'")])])])
                 for string in elem.children:
                     liste.append(string.value[1:-1])
                 self.scope.add(tree.children[0].value, liste)
@@ -292,20 +302,29 @@ class OurInterpreter(Interpreter):
     def assign_expr_arith(self, tree):
         print("debug : assign_expr_arith")
         print("-----------------")
-        print(tree.children)
+        if (len(tree.children[1]) == 1):
+            self.scope.add(tree.children[0].value, tree.children[1].value)
+        else:
+            print("debug here (assign_expr_arith) : " + str(tree))
+            pass
+        
 
     # Définis le mot string_expression dans la grammaire.
     def string_expression(self, tree):
         print("debug : string_expression")
         print("-----------------")
         print(self.scope.dictio)
-        return tree.children[0].value
+        if (type(tree.children[0]) is Tree.Tree):
+            print("tree.children : " + str(tree.children))
+            print("tree.children[0] : " + str(tree.children[0]))
+            return self.visit_children(tree)
+        else:
+            return tree.children[0].value
 
     # Définis le mot string_list dans la grammaire.
     def string_list(self, tree):
         print("debug : string_list")
         print("-----------------")
-        
         return self.visit_children(tree)
 
     # Définis le mot string_list_interior dans la grammaire.

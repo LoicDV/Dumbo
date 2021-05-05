@@ -76,11 +76,32 @@ Fin du Scope + discussion entre nous pour valider le 30 Avril.
 Fin des définitions pour la grammaire. \
 Début des tests sur Moodle.
 
+## 4 Mai 2021.
+
+Suite des debugs concernants les templates.
+
+Template 1 ok. \
+Debut du template 2.
+
+Probleme de détection avec le symbole "+" dans les assignations.
+
+Séparation de l'assignement pour les variables et la partie arithmétique.
+
+## 5 Mai 2021.
+
+Complication avec le template 2. \
+Résoud des bugs avec les strings_expression.
+
+
 ## Fin du projet.
 
 - [x] Documentation Lark.
 - [ ] Code Python.
 	- [x] Lexèmes.
 	- [ ] Grammaires.
+- [ ] Exemples.
+	- [x] Exemple 1.
+	- [ ] Exemple 2.
+	- [ ] Exemple 3.
 - [ ] Rapport.
 - [ ] Tests.

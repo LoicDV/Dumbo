@@ -6,29 +6,25 @@ dumbo_bloc: ( "{{" expression_list "}}" ) | ( "{{" "}}" )
 
 expression_list: expression ";" expression_list | expression ";"
 
-expression: add_expr
-            | sub_expr 
-            | mul_expr 
-            | div_expr 
-            | print_expr 
+expression: print_expr 
             | for_expr 
-            | assign_expr_var
-            | assign_expr_arith
+            | assign_expr
             | if_expr
 
-add_expr: (INT "+" INT)
-sub_expr: (INT "-" INT)
-mul_expr: (INT "*" INT)
-div_expr: (INT "/" ("1".."9")+)
+add_expr: ((VARIABLE | INT) ADD  (VARIABLE | INT))
+sub_expr: ((VARIABLE | INT) SUB (VARIABLE | INT))
+mul_expr: ((VARIABLE | INT) MUL (VARIABLE | INT))
+div_expr: ((VARIABLE | INT) DIV (VARIABLE | ("1".."9")+))
 inf_expr: (add_int "<" add_int)
 sup_expr: (add_int ">" add_int)
 eq_expr: (add_int "==" add_int)
 dif_expr: (add_int "!=" add_int)
+assign_expr: (assign_expr_arith | assign_expr_var)
 
 add_int : mul_int (ADD_OPERATION mul_int)*
-ADD_OPERATION : "+" | "-" 
-mul_int : INT (MUL_OPERATION INT)*
-MUL_OPERATION : "*" | "/"
+ADD_OPERATION : ADD | SUB
+mul_int : (VARIABLE | INT) (MUL_OPERATION (VARIABLE | INT))*
+MUL_OPERATION : MUL | DIV
 
 bool_expr: BOOLEAN | inf_expr | sup_expr | eq_expr | dif_expr | (bool_expr OPERATOR bool_expr)
 
@@ -38,13 +34,17 @@ for_expr: ( "for" VARIABLE "in" (string_list | VARIABLE) "do" expression_list "e
 
 print_expr: ("print" string_expression)
 
-assign_expr_arith: ( VARIABLE ":=" (add_expr | sub_expr | mul_expr | div_expr) )
-assign_expr_var: ( VARIABLE ":=" (string_expression | string_list | INT) )
+assign_expr_arith: ( VARIABLE ":=" (add_expr | sub_expr | mul_expr | div_expr | INT ) )
+assign_expr_var: ( VARIABLE ":=" (string_expression | string_list) )
 
-string_expression: STRING | VARIABLE | string_expression "." string_expression
+string_expression: string_expression "." string_expression | STRING | VARIABLE
 string_list: "(" string_list_interior ")"
 string_list_interior: ( STRING ("," STRING)* )
 
+ADD: "+"
+SUB: "-"
+MUL: "*"
+DIV: "/"
 VARIABLE: CNAME
 BOOLEAN: "true" | "false"
 OPERATOR: "or" | "and"
