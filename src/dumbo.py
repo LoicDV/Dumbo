@@ -112,7 +112,7 @@ class OurInterpreter(Interpreter):
         if expression == "for_expr" or expression == "if_expr":
             self.scope.other.begin_insert(self.scope.dictio)
             self.visit_children(tree)
-            self.scope.dictio = self.scope.other.begin_remove()
+            self.scope.dictio = self.scope.other.begin_remove().data
         elif expression == "print_expr":
             self.visit_children(tree)
         elif expression == "add_expr":
@@ -132,7 +132,7 @@ class OurInterpreter(Interpreter):
         print("debug : add_expr")
         print("-----------------")
         
-        sum = tree.children[0].data + tree.children[2].data
+        sum = tree.children[0].value + tree.children[2].value
         return sum
 
     # Définis le mot sub_expr dans la grammaire.
@@ -220,9 +220,7 @@ class OurInterpreter(Interpreter):
     def print_expr(self, tree):
         print("debug : print_expr")
         print("-----------------")
-        res = self.visit_children(tree)
-        if type(res) is list:
-            res = res[0]
+        res = self.visit_children(tree)[0]
         if res[0] == "'":
             self.myPrint.add(" " + res[1:-1] + " ")
         else:
@@ -280,7 +278,6 @@ class OurInterpreter(Interpreter):
     def assign_expr(self, tree):
         print("debug : assign_expr")
         print("-----------------")
-        print(tree)
         self.visit_children(tree)
 
     # Définis le mot assign_expr_var dans la grammaire.
@@ -302,7 +299,10 @@ class OurInterpreter(Interpreter):
     def assign_expr_arith(self, tree):
         print("debug : assign_expr_arith")
         print("-----------------")
-        if (len(tree.children[1]) == 1):
+        print(tree.children[1])
+        if (type(tree.children[1]) is Tree.Tree):
+            self.scope.add(tree.children[0].value, self.visit(tree.children[1]))
+        elif (len(tree.children[1]) == 1):
             self.scope.add(tree.children[0].value, tree.children[1].value)
         else:
             print("debug here (assign_expr_arith) : " + str(tree))
@@ -313,11 +313,12 @@ class OurInterpreter(Interpreter):
     def string_expression(self, tree):
         print("debug : string_expression")
         print("-----------------")
-        print(self.scope.dictio)
-        if (type(tree.children[0]) is Tree.Tree):
-            print("tree.children : " + str(tree.children))
-            print("tree.children[0] : " + str(tree.children[0]))
-            return self.visit_children(tree)
+        if (tree.data == "string_expression"):
+            if (type(self.visit_children(tree)[0]) is list):
+                print(self.visit_children(tree)[0].value)
+                return self.visit_children(tree)[0].value
+            else:
+                return self.visit_children(tree)[0]
         else:
             return tree.children[0].value
 
