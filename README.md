@@ -1,8 +1,8 @@
-# Dumbo
+# <u> __Dumbo__ </u> 
 
 ### Projet créé par Loïc Dupont et Clément Durieux.
 
-## Utilisation du programme :
+## <u> ___Utilisation du programme___ </u>:
 ```
 python dumbo.py fichier_data fichier_template
 ```
@@ -11,7 +11,7 @@ python dumbo.py fichier_data fichier_template
 **fichier_template** : fichier qui contient le texte (html) et du dumbo où
 on injecte les données reçues à partir du fichier data.
 
-## 2 Avril 2021.
+## <u> ___2 Avril 2021.___ </u>
 
 Début du projet de compilation sur le dumbo.
 
@@ -34,7 +34,7 @@ Concernant la grammaire, nous nous baserons sur ce lien :
 
 Début de création du fichier _lark_grammar.py_ pour se familiariser avec Lark.
 
-## 17 Avril 2021.
+## <u> ___17 Avril 2021.___ </u>
 
 Résolution des premiers exercices pour compléter la grammaire.
 
@@ -46,7 +46,7 @@ Mise en place des expressions for, if et des booleans.
 
 ==> Regarder pour le txt et continuer les questions.
 
-## 24 Avril 2021.
+## <u> ___24 Avril 2021.___ </u>
 
 Résolution complète de la grammaire.
 
@@ -56,7 +56,7 @@ Début du reste de l'analyse syntaxique.
 
 Etant donné que notre code utilisera en partie l'interpreteur déjà présent, autant avoir un moyen de le retrouver facilement. (__ligne 310__)
 
-## 30 Avril 2021.
+## <u> ___30 Avril 2021.___ </u>
 
 Recherche de moyen pour écrire les fonctions + gérer les différentes scopes.
 
@@ -69,14 +69,14 @@ Utilisation d'un objet Scope qui contiendrait un dictionnaire (clé : la variabl
 
 **TODO** Faire le reste des fonctions sans oublier d'inclure l'objet Scope.
 
-## 1 Mai 2021.
+## <u> ___1 Mai 2021.___ </u>
 
 Fin du Scope + discussion entre nous pour valider le 30 Avril.
 
 Fin des définitions pour la grammaire. \
 Début des tests sur Moodle.
 
-## 4 Mai 2021.
+## <u> ___4 Mai 2021.___ </u>
 
 Suite des debugs concernants les templates.
 
@@ -87,13 +87,30 @@ Probleme de détection avec le symbole "+" dans les assignations.
 
 Séparation de l'assignement pour les variables et la partie arithmétique.
 
-## 5 Mai 2021.
+## <u> ___5 Mai 2021.___ </u>
 
 Complication avec le template 2. \
 Résoud des bugs avec les strings_expression.
 
+Template 2 se compile mais des problèmes sont remarqués dans la output.
 
-## Fin du projet.
+**TODO** Corriger les bugs du template 2 pour passer au 3eme template.
+
+## <u> ___6 Mai 2021.___ </u>
+
+Suite des corrections des bugs du template 2.
+
+Output sortie : 
+```
+<html><head><title> Mes plus belles vacances </title></head><body><h1> Mes plus belles vacances </h1> <a href ="  <a href ="  <a href ="  <a href =" <br/><br/>Ilya i1 photosdanslalbum" Coucher de soleil.png ".</body></html>
+```
+
+Output attendue : 
+```
+<html><head><title>Mes plus belles vacances</title></head><body><h1>Mes plus belles vacances</h1><a href ="Mon beau bateau.png">Mon beau bateau.png</a><a href ="Belle maman.png">Belle maman.png</a><a href ="Apero.png">Apero.png</a><a href ="Coucher de soleil.png">Coucher de soleil.png</a><br /><br />Il y a 4 photos dans l album "Mes plus belles vacances".</body></html>
+```
+
+## <u> ___Fin du projet.___ </u>
 
 - [x] Documentation Lark.
 - [ ] Code Python.
@@ -101,7 +118,10 @@ Résoud des bugs avec les strings_expression.
 	- [ ] Grammaires.
 - [ ] Exemples.
 	- [x] Exemple 1.
-	- [ ] Exemple 2.
+	- [x] Exemple 2.
 	- [ ] Exemple 3.
+	- [x] Exemple 1 (sans bug).
+	- [ ] Exemple 2 (sans bug).
+	- [ ] Exemple 3 (sans bug).
 - [ ] Rapport.
 - [ ] Tests.

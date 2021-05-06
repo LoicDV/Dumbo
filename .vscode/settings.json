@@ -1,5 +1,6 @@
 {
     "python.pythonPath": "C:\\Python39\\python.exe",
     "liveshare.focusBehavior": "prompt",
-    "liveshare.nameTagVisibility":"Never"
+    "liveshare.nameTagVisibility":"Never",
+    "args": ["c:/Users/Utilisateur/Documents/GitHub/Dumbo/exemples/data_t2.dumbo", "c:/Users/Utilisateur/Documents/GitHub/Dumbo/exemples/template2.dumbo"]
 }

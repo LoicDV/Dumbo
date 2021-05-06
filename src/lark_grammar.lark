@@ -37,7 +37,7 @@ print_expr: ("print" string_expression)
 assign_expr_arith: ( VARIABLE ":=" (add_expr | sub_expr | mul_expr | div_expr | INT ) )
 assign_expr_var: ( VARIABLE ":=" (string_expression | string_list) )
 
-string_expression: string_expression "." string_expression | STRING | VARIABLE
+string_expression: (string_expression "." string_expression) | STRING | VARIABLE
 string_list: "(" string_list_interior ")"
 string_list_interior: ( STRING ("," STRING)* )
 

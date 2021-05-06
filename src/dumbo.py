@@ -113,17 +113,7 @@ class OurInterpreter(Interpreter):
             self.scope.other.begin_insert(self.scope.dictio)
             self.visit_children(tree)
             self.scope.dictio = self.scope.other.begin_remove().data
-        elif expression == "print_expr":
-            self.visit_children(tree)
-        elif expression == "add_expr":
-            self.visit_children(tree)
-        elif expression == "sub_expr":
-            self.visit_children(tree)
-        elif expression == "mul_expr":
-            self.visit_children(tree)
-        elif expression == "div_expr":
-            self.visit_children(tree)
-        # cas assignement de variable.
+        # cas assignement de variable ou print.
         else:
             self.visit_children(tree)
 
@@ -140,7 +130,7 @@ class OurInterpreter(Interpreter):
         print("debug : sub_expr")
         print("-----------------")
         
-        sub = tree.children[0].data - tree.children[2].data
+        sub = tree.children[0].value - tree.children[2].value
         return sub
 
     # Définis le mot mul_expr dans la grammaire.
@@ -148,7 +138,7 @@ class OurInterpreter(Interpreter):
         print("debug : mul_expr")
         print("-----------------")
         
-        mul = tree.children[0].data * tree.children[2].data
+        mul = tree.children[0].value * tree.children[2].value
         return mul
 
     # Définis le mot div_expr dans la grammaire.
@@ -156,7 +146,7 @@ class OurInterpreter(Interpreter):
         print("debug : div_expr")
         print("-----------------")
         
-        div = tree.children[0].data // tree.children[2].data
+        div = tree.children[0].value // tree.children[2].value
         return div
 
     # Définis le mot inf_expr dans la grammaire.
@@ -221,6 +211,8 @@ class OurInterpreter(Interpreter):
         print("debug : print_expr")
         print("-----------------")
         res = self.visit_children(tree)[0]
+        print(self.visit_children(tree))
+        print("res = " + str(res))
         if res[0] == "'":
             self.myPrint.add(" " + res[1:-1] + " ")
         else:
@@ -315,7 +307,6 @@ class OurInterpreter(Interpreter):
         print("-----------------")
         if (tree.data == "string_expression"):
             if (type(self.visit_children(tree)[0]) is list):
-                print(self.visit_children(tree)[0].value)
                 return self.visit_children(tree)[0].value
             else:
                 return self.visit_children(tree)[0]
