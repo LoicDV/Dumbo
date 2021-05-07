@@ -1,6 +1,6 @@
 programme: txt | txt programme | dumbo_bloc | dumbo_bloc programme
 
-txt: (/[^{]/)+
+txt: /[^{]+/
 
 dumbo_bloc: ( "{{" expression_list "}}" ) | ( "{{" "}}" )
 
@@ -11,10 +11,10 @@ expression: print_expr
             | assign_expr
             | if_expr
 
-add_expr: ((VARIABLE | INT) ADD  (VARIABLE | INT))
-sub_expr: ((VARIABLE | INT) SUB (VARIABLE | INT))
-mul_expr: ((VARIABLE | INT) MUL (VARIABLE | INT))
-div_expr: ((VARIABLE | INT) DIV (VARIABLE | ("1".."9")+))
+add_expr: ((VARIABLE | INT) (ADD  (VARIABLE | INT))+)
+sub_expr: ((VARIABLE | INT) (SUB (VARIABLE | INT))+)
+mul_expr: ((VARIABLE | INT) (MUL (VARIABLE | INT))+)
+div_expr: ((VARIABLE | INT) (DIV (VARIABLE | ("1".."9")+))+)
 inf_expr: (add_int "<" add_int)
 sup_expr: (add_int ">" add_int)
 eq_expr: (add_int "==" add_int)
@@ -37,18 +37,20 @@ print_expr: ("print" string_expression)
 assign_expr_arith: ( VARIABLE ":=" (add_expr | sub_expr | mul_expr | div_expr | INT ) )
 assign_expr_var: ( VARIABLE ":=" (string_expression | string_list) )
 
-string_expression: (string_expression "." string_expression) | STRING | VARIABLE
+string_expression: (string_expression DOT string_expression) | string | VARIABLE
 string_list: "(" string_list_interior ")"
-string_list_interior: ( STRING ("," STRING)* )
+string_list_interior: ( string ("," string)* )
+string: ( "'" STRING_INTERIOR "'" )
+STRING_INTERIOR: /[^']+/
 
 ADD: "+"
 SUB: "-"
 MUL: "*"
 DIV: "/"
+DOT: "." 
 VARIABLE: CNAME
 BOOLEAN: "true" | "false"
 OPERATOR: "or" | "and"
-STRING: ( "'" (/[^']/)* "'" )
 
 %import common.INT
 %import common.FLOAT

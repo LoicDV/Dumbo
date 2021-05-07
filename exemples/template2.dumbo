@@ -10,7 +10,6 @@
          endfor;
       }}
    <br />
-   <br />
    Il y a {{ print i; }} photos dans l album "{{ print nom; }}".
    </body>
 </html>

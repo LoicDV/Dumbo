@@ -71,7 +71,6 @@ class OurInterpreter(Interpreter):
     def programme(self, tree):
         print("debug : programme")
         print("-----------------")
-        
         self.visit_children(tree)
     
     # Définis le mot txt dans la grammaire.
@@ -88,7 +87,6 @@ class OurInterpreter(Interpreter):
     def dumbo_bloc(self, tree):
         print("debug : dumbo_bloc")
         print("-----------------")
-        
         # Gérer le dumbo_bloc par rapport à un autre dumbo_bloc
         # --> créer un objet spécifique pour eux.
         self.visit_children(tree)
@@ -105,7 +103,6 @@ class OurInterpreter(Interpreter):
         print("debug : expression")
         print("-----------------")
         
-        
         expression = tree.children[0].data
         # tab_expr = ["for", ...] ou tab_expr = ["if", ...] ou
         # tab_expr = ["<variable>", ...] ou tab_expr = ["print", ...]
@@ -121,41 +118,56 @@ class OurInterpreter(Interpreter):
     def add_expr(self, tree):
         print("debug : add_expr")
         print("-----------------")
-        
-        sum = tree.children[0].value + tree.children[2].value
-        return sum
+        res = 0
+        for i in range(0, len(tree.children), 2):
+            if self.scope.search(tree.children[i].value) != None:
+                res += int(self.scope.search(tree.children[i].value))
+            else:
+                res += int(tree.children[i].value)
+        return res
 
     # Définis le mot sub_expr dans la grammaire.
     def sub_expr(self, tree):
         print("debug : sub_expr")
         print("-----------------")
-        
-        sub = tree.children[0].value - tree.children[2].value
-        return sub
+        res = 0
+        for i in range(0, len(tree.children), 2):
+            if self.scope.search(tree.children[i].value) != None:
+                res -= int(self.scope.search(tree.children[i].value))
+            else:
+                res -= int(tree.children[i].value)
+        return res
 
     # Définis le mot mul_expr dans la grammaire.
     def mul_expr(self, tree):
         print("debug : mul_expr")
         print("-----------------")
-        
-        mul = tree.children[0].value * tree.children[2].value
-        return mul
+        res = 1
+        for i in range(0, len(tree.children), 2):
+            if self.scope.search(tree.children[i].value) != None:
+                res *= int(self.scope.search(tree.children[i].value))
+            else:
+                res *= int(tree.children[i].value)
+        return res
 
     # Définis le mot div_expr dans la grammaire.
     def div_expr(self, tree):
         print("debug : div_expr")
         print("-----------------")
-        
-        div = tree.children[0].value // tree.children[2].value
-        return div
+        res = 1
+        for i in range(0, len(tree.children), 2):
+            if self.scope.search(tree.children[i].value) != None:
+                res /= int(self.scope.search(tree.children[i].value))
+            else:
+                res /= int(tree.children[i].value)
+        return res
 
     # Définis le mot inf_expr dans la grammaire.
     def inf_expr(self, tree):
         print("debug : inf_expr")
         print("-----------------")
-        
         flag = False
-        if tree.children[0].data < tree.children[2].data:
+        if (self.visit(tree.children[0]) < self.visit(tree.children[1])):
             flag = True
         return flag
 
@@ -164,12 +176,7 @@ class OurInterpreter(Interpreter):
         print("debug : sup_expr")
         print("-----------------")
         flag = False
-        left_member = 0
-        right_member = 0
-        while(type(tree.children[0]) is not Token and type(tree.children[1]) is not Token):
-            tree.children[0] = self.visit_children(tree.children[0])
-            tree.children[1] = self.visit_children(tree.children[1])
-        if tree.children[0].data > tree.children[2].data:
+        if (self.visit(tree.children[0]) > self.visit(tree.children[1])):
             flag = True
         return flag
 
@@ -177,9 +184,8 @@ class OurInterpreter(Interpreter):
     def eq_expr(self, tree):
         print("debug : eq_expr")
         print("-----------------")
-        
         flag = False
-        if tree.children[0].data == tree.children[2].data:
+        if (self.visit(tree.children[0]) == self.visit(tree.children[1])):
             flag = True
         return flag
 
@@ -187,74 +193,68 @@ class OurInterpreter(Interpreter):
     def dif_expr(self, tree):
         print("debug : dif_expr")
         print("-----------------")
-        
         flag = False
-        if tree.children[0].data != tree.children[2].data:
+        if (self.visit(tree.children[0]) != self.visit(tree.children[1])):
             flag = True
         return flag
 
     def mul_int(self, tree):
         print("debug : mul_int")
         print("-----------------")
-        
-        mul = tree.children[0].value
-        i = 0
-        while tree.children[i] != None :
-            if tree.children[i] == "*":
-                mul = mul * tree.children[i+1].value
-            else : 
-                mul = mul / tree.children[i+1].value
-            i += 2
-        return mul
+        if (len(tree.children) == 1):
+            if isinstance(tree.children[0], Token):
+                return int((tree.children[0].value))
+            else:
+                return self.visit_children(tree)
+        else:
+            res = int(self.visit(tree.children[0]))
+            for i in range(1, len(tree.children)-1, 2):
+                operator = tree.children[i].value
+                if operator == "*":
+                    res *= int(self.visit(tree.children[i+1]))
+                else:
+                    res /= int(self.visit(tree.children[i+1]))
+            return res
         
     def print_expr(self, tree):
         print("debug : print_expr")
         print("-----------------")
         res = self.visit_children(tree)[0]
-        print(self.visit_children(tree))
-        print("res = " + str(res))
-        if res[0] == "'":
-            self.myPrint.add(" " + res[1:-1] + " ")
+        if (self.scope.search(res) != None):
+            self.myPrint.add(self.scope.search(res))
         else:
-            self.myPrint.add(" " + self.scope.search(res) + " ")
+            self.myPrint.add(res)
 
     def add_int(self, tree):
         print("debug : add_int")
         print("-----------------")
-        
-        sum = tree.children[0].value
-        i = 1
-        while tree.children[i] != None :
-            if tree.children[i] == "+":
-                sum = sum + tree.children[i+1].value
-            else : 
-                sum = sum - tree.children[i+1].value
-            i += 2
-        return sum
+        if (len(tree.children) == 1):
+            if isinstance(tree.children[0], Token):
+                return int(tree.children[0].value)
+            else:
+                return self.visit_children(tree)[0]
+        else:
+            res = int(self.visit(tree.children[0]))
+            for i in range(1, len(tree.children)-1, 2):
+                operator = tree.children[i].value
+                if operator == "+":
+                    res += int(self.visit(tree.children[i+1]))
+                else:
+                    res -= int(self.visit(tree.children[i+1]))
+            return res
 
     # Définis le mot bool_expr dans la grammaire.
     def bool_expr(self, tree):
         print("debug : bool_expr")
         print("-----------------")
-        
-        tab_expr = tree.children
-        flag = False
-        if tab_expr.length == 1:
-            if tab_expr[0]:
-                flag = self.visit_children(tree)
-            else:
-                flag = self.visit_children(tree)
-        else :
-            flag = self.visit_children(tree)
-        return flag
+        return self.visit_children(tree)[0]
 
     # Définis le mot if_expr dans la grammaire.
     def if_expr(self, tree):
         print("debug : if_expr")
         print("-----------------")
-        
-        if self.visit_children(tree.children[0]):
-            self.visit_children(tree.children[1])
+        if (self.visit(tree.children[0])):
+            self.visit(tree.children[1])
 
     # Définis le mot for_expr dans la grammaire.
     def for_expr(self, tree):
@@ -276,83 +276,51 @@ class OurInterpreter(Interpreter):
     def assign_expr_var(self, tree):
         print("debug : assign_expr_var")
         print("-----------------")
-        
-        liste = []
-        next_tree = tree.children[1:]
-        for elem in next_tree[0].children:
-            if isinstance(elem, Tree.Tree):
-                for string in elem.children:
-                    liste.append(string.value[1:-1])
-                self.scope.add(tree.children[0].value, liste)
-            else:
-                self.scope.add(tree.children[0].value, elem.value[1:-1])
-    
+        self.scope.add(tree.children[0].value, self.visit(tree.children[1]))
+
     # Définis le mot assign_expr_arith dans la grammaire.
     def assign_expr_arith(self, tree):
         print("debug : assign_expr_arith")
         print("-----------------")
-        print(tree.children[1])
-        if (type(tree.children[1]) is Tree.Tree):
-            self.scope.add(tree.children[0].value, self.visit(tree.children[1]))
-        elif (len(tree.children[1]) == 1):
-            self.scope.add(tree.children[0].value, tree.children[1].value)
+        if isinstance(tree.children[1], Tree.Tree):
+            self.scope.add(tree.children[0], self.visit(tree.children[1]))
         else:
-            print("debug here (assign_expr_arith) : " + str(tree))
-            pass
-        
+            self.scope.add(tree.children[0].value, tree.children[1].value)
 
     # Définis le mot string_expression dans la grammaire.
     def string_expression(self, tree):
         print("debug : string_expression")
         print("-----------------")
-        if (tree.data == "string_expression"):
-            if (type(self.visit_children(tree)[0]) is list):
-                return self.visit_children(tree)[0].value
-            else:
-                return self.visit_children(tree)[0]
+        res = ""
+        if(len(tree.children) > 1):
+            res += self.visit(tree.children[0])
+            res += self.visit(tree.children[2])
         else:
-            return tree.children[0].value
+            if (isinstance(tree.children[0], Tree.Tree)):
+                res += self.visit(tree.children[0])
+            else:
+                res += str(self.scope.search(tree.children[0].value))
+        return res
 
     # Définis le mot string_list dans la grammaire.
     def string_list(self, tree):
         print("debug : string_list")
         print("-----------------")
-        return self.visit_children(tree)
+        return self.visit_children(tree)[0]
 
     # Définis le mot string_list_interior dans la grammaire.
     def string_list_interior(self, tree):
         print("debug : string_list_interior")
         print("-----------------")
-        
         liste = []
         for elem in tree.children:
-            liste.append(elem.value)
+            liste.append(self.visit(elem))
         return liste
-
-    # Définis le mot variable dans la grammaire.
-    def variable(self, tree):
-        print("debug : variable")
-        print("-----------------")
-        
-        try :
-            return tree.children[0].value
-        except(UnexpectedToken) : 
-            print("error " + file + ":", file=sys.stderr)
 
     # Définis le mot string dans la grammaire.
     def string(self, tree):
         print("debug : string")
         print("-----------------")
-        try :
-            return tree.children[0].value
-        except(UnexpectedToken) : 
-            print("error " + file + ":", file=sys.stderr)
-        
-    # Définis le mot boolean dans la grammaire.  
-    def boolean(self, tree):
-        print("debug : boolean")
-        print("-----------------")
-        
         try :
             return tree.children[0].value
         except(UnexpectedToken) : 

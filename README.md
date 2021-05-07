@@ -110,18 +110,40 @@ Output attendue :
 <html><head><title>Mes plus belles vacances</title></head><body><h1>Mes plus belles vacances</h1><a href ="Mon beau bateau.png">Mon beau bateau.png</a><a href ="Belle maman.png">Belle maman.png</a><a href ="Apero.png">Apero.png</a><a href ="Coucher de soleil.png">Coucher de soleil.png</a><br /><br />Il y a 4 photos dans l album "Mes plus belles vacances".</body></html>
 ```
 
+Correction des phrases mais problèmes avec les ``'``.
+
+## <u> ___7 Mai 2021.___ </u>
+
+Rendez-vous avec Alexandre Decan sur notre problème de ``'``. \
+Résolution des problèmes d'espaces et d'indentation dans l'output. \
+Réécriture de ``string_expression`` pour pouvoir accéder à ``string`` et ``variable``.
+
+Gros bug décelé : je ne vais pas assez en profondeur donc réécriture des fonctions. \
+Résultat : plus aucun template fonctionne.
+
+Template 1 de nouveau correcte.
+
+Template 2 compile et sans bug.
+
+Regard vers le template 3. \
+Template 3 compile + sans bug. \
+Rapide bug réslu avec les ``add_expr``, ``sub_expr``, ``mul_expr``, ``div_expr`` qui n'acceptaient pas plus de 2 termes. 
+
+Début des tests unitaires.
+
 ## <u> ___Fin du projet.___ </u>
 
 - [x] Documentation Lark.
 - [ ] Code Python.
 	- [x] Lexèmes.
-	- [ ] Grammaires.
-- [ ] Exemples.
+	- [x] Grammaires.
+	- [ ] Fonctions.
+- [x] Exemples.
 	- [x] Exemple 1.
 	- [x] Exemple 2.
-	- [ ] Exemple 3.
+	- [x] Exemple 3.
 	- [x] Exemple 1 (sans bug).
-	- [ ] Exemple 2 (sans bug).
-	- [ ] Exemple 3 (sans bug).
+	- [x] Exemple 2 (sans bug).
+	- [x] Exemple 3 (sans bug).
 - [ ] Rapport.
 - [ ] Tests.
