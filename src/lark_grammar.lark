@@ -11,10 +11,8 @@ expression: print_expr
             | assign_expr
             | if_expr
 
-add_expr: ((VARIABLE | INT) (ADD  (VARIABLE | INT))+)
-sub_expr: ((VARIABLE | INT) (SUB (VARIABLE | INT))+)
-mul_expr: ((VARIABLE | INT) (MUL (VARIABLE | INT))+)
-div_expr: ((VARIABLE | INT) (DIV (VARIABLE | ("1".."9")+))+)
+add_expr: (mul_expr ((ADD|SUB)  mul_expr)+)
+mul_expr: ((VARIABLE | INT) ((MUL|DIV) (VARIABLE | INT))*)
 inf_expr: (add_int "<" add_int)
 sup_expr: (add_int ">" add_int)
 eq_expr: (add_int "==" add_int)
@@ -34,10 +32,10 @@ for_expr: ( "for" VARIABLE "in" (string_list | VARIABLE) "do" expression_list "e
 
 print_expr: ("print" string_expression)
 
-assign_expr_arith: ( VARIABLE ":=" (add_expr | sub_expr | mul_expr | div_expr | INT ) )
+assign_expr_arith: ( VARIABLE ":=" (add_expr | INT) )
 assign_expr_var: ( VARIABLE ":=" (string_expression | string_list) )
 
-string_expression: (string_expression DOT string_expression) | string | VARIABLE
+string_expression: (string_expression DOT string_expression) | string | VARIABLE ((MUL|DIV) (VARIABLE | INT))* | INT ((MUL|DIV) (VARIABLE | INT))+
 string_list: "(" string_list_interior ")"
 string_list_interior: ( string ("," string)* )
 string: ( "'" STRING_INTERIOR "'" )
