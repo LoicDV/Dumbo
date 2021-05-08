@@ -24,13 +24,13 @@ ADD_OPERATION : ADD | SUB
 mul_int : (VARIABLE | INT) (MUL_OPERATION (VARIABLE | INT))*
 MUL_OPERATION : MUL | DIV
 
-bool_expr: BOOLEAN | inf_expr | sup_expr | eq_expr | dif_expr | (bool_expr OPERATOR bool_expr)
+bool_expr: (BOOLEAN_TRUE | BOOLEAN_FALSE | inf_expr | sup_expr | eq_expr | dif_expr | (bool_expr OPERATOR bool_expr))
 
 if_expr: ( "if" bool_expr "do" expression_list "endif" )
 
 for_expr: ( "for" VARIABLE "in" (string_list | VARIABLE) "do" expression_list "endfor" )
 
-print_expr: ("print" string_expression)
+print_expr: ("print" (string_expression | INT))
 
 assign_expr_arith: ( VARIABLE ":=" (add_expr | INT) )
 assign_expr_var: ( VARIABLE ":=" (string_expression | string_list) )
@@ -47,12 +47,10 @@ MUL: "*"
 DIV: "/"
 DOT: "." 
 VARIABLE: CNAME
-BOOLEAN: "true" | "false"
+BOOLEAN_TRUE: "true"
+BOOLEAN_FALSE: "false"
 OPERATOR: "or" | "and"
 
 %import common.INT
-%import common.FLOAT
-%import common.NUMBER
-%import common.WORD
 %import common.CNAME
 %ignore /[ \n\t]/

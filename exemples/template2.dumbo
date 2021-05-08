@@ -3,10 +3,10 @@
    <body>
       <h1>{{ print nom; }}</h1>
       {{
-         i := 1;
+         i := 0;
          for nom in listephoto do
            print '<a href ="'.nom.'">'.nom.'</a>';
-           i := i + 1 * 2 + 1 * 2;
+           i := i + 1;
          endfor;
       }}
    <br />

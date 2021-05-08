@@ -160,22 +160,31 @@ class OurInterpreter(Interpreter):
             flag = True
         return flag
 
+    # Définis le mot mul_int dans la grammaire.
     def mul_int(self, tree):
         if (len(tree.children) == 1):
             if isinstance(tree.children[0], Token):
-                return int((tree.children[0].value))
+                if (tree.children[0].type == "INT"):
+                    return int(tree.children[0].value)
+                else:
+                    return int(self.scope.search(tree.children[0].value))
             else:
                 return self.visit_children(tree)
         else:
-            res = int(self.visit(tree.children[0]))
+            pot_int = tree.children[0].value
+            if (self.scope.search(pot_int) != None):
+                res = int(self.scope.search(pot_int))
+            else:
+                res = int(pot_int)
             for i in range(1, len(tree.children)-1, 2):
                 operator = tree.children[i].value
                 if operator == "*":
-                    res *= int(self.visit(tree.children[i+1]))
+                    res *= int(tree.children[i+1].value)
                 else:
-                    res /= int(self.visit(tree.children[i+1]))
+                    res /= int(tree.children[i+1].value)
             return res
-        
+    
+    # Définis le mot print_expr dans la grammaire.
     def print_expr(self, tree):
         res = self.visit_children(tree)[0]
         if (self.scope.search(res) != None):
@@ -183,6 +192,7 @@ class OurInterpreter(Interpreter):
         else:
             self.myPrint.add(res)
 
+    # Définis le mot add_int dans la grammaire.
     def add_int(self, tree):
         if (len(tree.children) == 1):
             if isinstance(tree.children[0], Token):
@@ -201,11 +211,32 @@ class OurInterpreter(Interpreter):
 
     # Définis le mot bool_expr dans la grammaire.
     def bool_expr(self, tree):
-        return self.visit_children(tree)[0]
+        if (len(tree.children) > 1):
+            if (isinstance(tree.children[0], Token)):
+                flag = tree.children[0].value
+            else:
+                flag = self.visit(tree.children[0])
+            for i in range(1, len(tree.children), 2):
+                operator = tree.children[i].value
+                next_flag = self.visit(tree.children[i+1])
+                if (operator == "or"):
+                    flag = flag or next_flag
+                else:
+                    flag = flag and next_flag
+            return flag
+        else:
+            if isinstance(tree.children[0], Token):
+                if (tree.children[0] == "true"):
+                    return True
+                else:
+                    return False
+            else:
+                return self.visit(tree.children[0])
 
     # Définis le mot if_expr dans la grammaire.
     def if_expr(self, tree):
-        if (self.visit(tree.children[0])):
+        flag = self.visit(tree.children[0])
+        if (flag):
             self.visit(tree.children[1])
 
     # Définis le mot for_expr dans la grammaire.
