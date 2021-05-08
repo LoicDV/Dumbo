@@ -72,15 +72,11 @@ class OurInterpreter(Interpreter):
     
     # Définis le mot txt dans la grammaire.
     def txt(self, tree):
-        # De part le code dans tree.py, children est une liste d'éléments.
-        # Ici, on est dans txt qui ne va pas se dériver autrement donc il y a qu'un seul fils.
         for elem in tree.children:
             self.myPrint.add(elem.value)
         
     # Définis le mot dumbo_bloc dans la grammaire.
     def dumbo_bloc(self, tree):
-        # Gérer le dumbo_bloc par rapport à un autre dumbo_bloc
-        # --> créer un objet spécifique pour eux.
         self.visit_children(tree)
 
     # Définis le mot expresssion_list dans la grammaire.
@@ -90,8 +86,6 @@ class OurInterpreter(Interpreter):
     # Définis le mot expression dans la grammaire.
     def expression(self, tree):
         expression = tree.children[0].data
-        # tab_expr = ["for", ...] ou tab_expr = ["if", ...] ou
-        # tab_expr = ["<variable>", ...] ou tab_expr = ["print", ...]
         if expression == "for_expr" or expression == "if_expr":
             self.scope.other.begin_insert(self.scope.dictio)
             self.visit_children(tree)
@@ -129,7 +123,7 @@ class OurInterpreter(Interpreter):
             if (operator == "*"):
                 res *= next_int
             else:
-                res /= next_int
+                res //= next_int
         return res
 
     # Définis le mot inf_expr dans la grammaire.
@@ -184,7 +178,7 @@ class OurInterpreter(Interpreter):
                 if operator == "*":
                     res *= int(pot_int)
                 else:
-                    res /= int(pot_int)
+                    res //= int(pot_int)
             return res
     
     # Définis le mot print_expr dans la grammaire.
@@ -277,15 +271,22 @@ class OurInterpreter(Interpreter):
         if(len(tree.children) > 1):
             if (isinstance(tree.children[0], Token)):
                 if((tree.children[0].type == "VARIABLE") or (tree.children[0].type == "INT")):
-                    res = int(tree.children[0].value)
+                    res = tree.children[0].value
                     if (self.scope.search(res) != None):
-                        res = self.scope.search(res)
+                        res = int(self.scope.search(res))
+                    else :
+                        res = int(res)
+                    if (self.scope.search(res) != None):
+                        res = int(self.scope.search(res))
                     for i in range(1, len(tree.children), 2):
                         operator = tree.children[i].value
+                        pot_int = tree.children[i+1].value
+                        if (self.scope.search(pot_int) != None):
+                            pot_int = self.scope.search(pot_int)
                         if (operator == "*"):
-                            res *= int(tree.children[i+1].value)
+                            res *= int(pot_int)
                         else:
-                            res /= int(tree.children[i+1].value)
+                            res //= int(pot_int)
             else:
                 res += self.visit(tree.children[0])
                 res += self.visit(tree.children[2])
