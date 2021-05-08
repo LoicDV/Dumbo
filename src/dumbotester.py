@@ -155,7 +155,73 @@ class DumboTester(unittest.TestCase):
         self.assertEqual(OurInterpreter(scope).display(tree), "1")
 
     def testAssignArith(self):
-        pass
+        # Bonne assignation.
+        tree = langage.parse("{{ test := 1; test2 := 2; print test; print test2; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "12")
+        # Variable ecrasée.
+        tree = langage.parse("{{ test := 1; test := 0; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "0")
+        # add_expr.
+        tree = langage.parse("{{ test := 1 + 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
+        tree = langage.parse("{{ test := 1 + 1 + 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "3")
+        tree = langage.parse("{{ test := 1 * 1 + 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
+        tree = langage.parse("{{ test := 1 + 1 * 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
+        tree = langage.parse("{{ test := 1 * 1 + 1 * 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
+        tree = langage.parse("{{ test := 1 * 1 + 1 * 1 * 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
+        tree = langage.parse("{{ test := 1 * 1 + 1 * 1 + 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "3")
+        tree = langage.parse("{{ test := 1 * 1 + 1 * 1 + 1 * 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "3")
+        # add_exp avec variable.
+        tree = langage.parse("{{ i := 1; test := i + 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
+        tree = langage.parse("{{ i := 1; test := i + 1 + 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "3")
+        tree = langage.parse("{{ i := 1; test := 1 + i + 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "3")
+        tree = langage.parse("{{ i := 1; test := i + 1 + i; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "3")
+        tree = langage.parse("{{ i := 1; test := 1 * i + 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
+        tree = langage.parse("{{ i := 1; test := i * 1 + 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
+        tree = langage.parse("{{ i := 1; test := 1 + i * 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
+        tree = langage.parse("{{ i := 1; test := 1 + 1 * i; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
+        tree = langage.parse("{{ i := 1; test := 1 * i + 1 * 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
+        tree = langage.parse("{{ i := 1; test := 1 * 1 + i * 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
+        tree = langage.parse("{{ i := 1; j := 1; test := j * i + 1 * 1 * 1; print test; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2")
 
     def testIfRéussi(self):
         # If réussi avec boolean.
@@ -762,7 +828,6 @@ class DumboTester(unittest.TestCase):
         tree = langage.parse("{{ a := false; if false and false or a do print 'yes'; endif; }}")
         scope = Scope()
         self.assertEqual(OurInterpreter(scope).display(tree), "")
-        
         tree = langage.parse("{{ a := false; b := false; if a and b or false do print 'yes'; endif; }}")
         scope = Scope()
         self.assertEqual(OurInterpreter(scope).display(tree), "")
@@ -996,7 +1061,30 @@ class DumboTester(unittest.TestCase):
         tree = langage.parse("{{ a := 0; b := 0; if a + 1 * 0 != b + 1 * 0 do print 'yes'; endif; }}")
         scope = Scope()
         self.assertEqual(OurInterpreter(scope).display(tree), "")
-        
+
+    def testFor(self):
+        # string list.
+        tree = langage.parse("{{ for elem in ('1', '2', '3') do print elem; endfor; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "123")
+        # variable.
+        tree = langage.parse("{{ a := ('1', '2', '3'); for elem in a do print elem; endfor; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "123")
+        # if dans le for.
+        tree = langage.parse("{{ a := ('1', '2', '3'); for elem in a do if elem == 2 do print '2 ok'; endif; endfor; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2 ok")
+        tree = langage.parse("{{ a := ('1', '2', '3'); for elem in a do if elem == 4 do print '2 ok'; endif; endfor; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "")
+        # for dans le if.
+        tree = langage.parse("{{ a := ('1', '2', '3'); if true do for elem in a do if elem == 2 do print '2 ok'; endif; endfor; endif; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "2 ok")
+        tree = langage.parse("{{ a := ('1', '2', '3'); if false do for elem in a do if elem == 2 do print '2 ok'; endif; endfor; endif; }}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "")
 
 if __name__ == '__main__':
     with open(".\src\lark_grammar.lark", "r") as grammar_file:

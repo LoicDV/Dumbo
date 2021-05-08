@@ -1,1 +1,0 @@
-{{ a := true; if a do print 'yes'; endif; }}

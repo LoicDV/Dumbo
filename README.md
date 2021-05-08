@@ -131,13 +131,18 @@ Rapide bug réslu avec les ``add_expr``, ``sub_expr``, ``mul_expr``, ``div_expr`
 
 Début des tests unitaires.
 
+## <u> ___8 Mai 2021.___ </u>
+
+Fin des tests unitaires et de la robustesse du projet. \
+Reste le rapport à terminer pour conclure le projet
+
 ## <u> ___Fin du projet.___ </u>
 
 - [x] Documentation Lark.
-- [ ] Code Python.
+- [x] Code Python.
 	- [x] Lexèmes.
 	- [x] Grammaires.
-	- [ ] Fonctions.
+	- [x] Fonctions.
 - [x] Exemples.
 	- [x] Exemple 1.
 	- [x] Exemple 2.
@@ -146,4 +151,4 @@ Début des tests unitaires.
 	- [x] Exemple 2 (sans bug).
 	- [x] Exemple 3 (sans bug).
 - [ ] Rapport.
-- [ ] Tests.
+- [x] Tests.

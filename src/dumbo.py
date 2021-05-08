@@ -118,7 +118,11 @@ class OurInterpreter(Interpreter):
         else:
             res = int(first_int)
         for i in range(1, len(tree.children), 2):
-            next_int = int(tree.children[i+1].value)
+            next_int = tree.children[i+1].value
+            if (self.scope.search(next_int) != None):
+                next_int = int(self.scope.search(next_int))
+            else:
+                next_int = int(next_int)
             operator = tree.children[i].value
             if (operator == "*"):
                 res *= next_int
@@ -242,10 +246,16 @@ class OurInterpreter(Interpreter):
     # Définis le mot for_expr dans la grammaire.
     def for_expr(self, tree):
         var, liste_elem, liste_expr = tree.children
-        for i in range(len(self.scope.search(liste_elem))):
-            self.scope.add(var.value, self.scope.search(liste_elem)[i])
-            self.visit_children(liste_expr)
-            self.scope.dictio = self.scope.other.head.data
+        if (isinstance(liste_elem, Token)):
+            for i in range(len(self.scope.search(liste_elem))):
+                self.scope.add(var.value, self.scope.search(liste_elem)[i])
+                self.visit_children(liste_expr)
+                self.scope.dictio = self.scope.other.head.data
+        else:
+            for elem in liste_elem.children[0].children:
+                self.scope.add(var.value, self.visit_children(elem)[0])
+                self.visit_children(liste_expr)
+                self.scope.dictio = self.scope.other.head.data
 
     # Définis le mot assign_expr dans la grammaire.
     def assign_expr(self, tree):
