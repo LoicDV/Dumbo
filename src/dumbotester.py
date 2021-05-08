@@ -23,12 +23,12 @@ class DumboTester(unittest.TestCase):
         tree = langage.parse("{{ a := 'cou'.'cou'; print a; }}")
         self.assertEqual(OurInterpreter(scope).display(tree), "coucou")
 
-    def testIfSimpleRéussi(self):
-        # If réussi.
-        tree = langage.parse("{{ if 1 < 2 do print 'yes'; endif; }}")
-        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+    def testIfRéussi(self):
         # If réussi avec boolean.
         tree = langage.parse("{{ if true do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        # If réussi avec variables.
+        tree = langage.parse("{{ a := true; if a do print 'yes'; endif; }}")
         self.assertEqual(OurInterpreter(scope).display(tree), "yes")
         # If réussi avec And et boolean.
         tree = langage.parse("{{ if true and true do print 'yes'; endif; }}")
@@ -108,8 +108,17 @@ class DumboTester(unittest.TestCase):
         self.assertEqual(OurInterpreter(scope).display(tree), "yes")
         tree = langage.parse("{{ a := 4 / 2 + 1 * 6 - 4; if a > 0 + 1 * 0 do print 'yes'; endif; }}")
         self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 2; if a + 1 > 0 + 1 + 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 4 / 2; if 1 + a > 0 + 1 + 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 4 / 2 + 1 * 6 - 4; if 1 * a > 0 + 1 * 0 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
         # If réussi avec ==.
         tree = langage.parse("{{ if 1 == 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        # If réussi avec == avec variable.
+        tree = langage.parse("{{ a := 1; if a == 1 do print 'yes'; endif; }}")
         self.assertEqual(OurInterpreter(scope).display(tree), "yes")
         # If réussi avec == avec calcul.
         tree = langage.parse("{{ if 0 + 1 == 1 do print 'yes'; endif; }}")
@@ -118,8 +127,24 @@ class DumboTester(unittest.TestCase):
         self.assertEqual(OurInterpreter(scope).display(tree), "yes")
         tree = langage.parse("{{ if 0 + 1 * 0 + 0 == 1 * 0 + 1 - 1 * 1 do print 'yes'; endif; }}")
         self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        # If réussi avec == avec calcul avec variable.
+        tree = langage.parse("{{ a := 0 + 1; if a == 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 0 + 1; if a == 0 + 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 0 + 1 * 0 + 0; if a == 1 * 0 + 1 - 1 * 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 0 + 1; if a + 1 == 1 + 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 0 + 1; if a + 1 == 0 + 1 + 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 0 + 1 * 0 + 0; if a * 1 == 1 * 0 + 1 - 1 * 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
         # If réussi avec !=.
         tree = langage.parse("{{ if 0 != 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        # If réussi avec != avec variable.
+        tree = langage.parse("{{ a := 0; if a != 1 do print 'yes'; endif; }}")
         self.assertEqual(OurInterpreter(scope).display(tree), "yes")
         # If réussi avec != avec calcul.
         tree = langage.parse("{{ if 0 + 0 != 1 do print 'yes'; endif; }}")
@@ -128,11 +153,21 @@ class DumboTester(unittest.TestCase):
         self.assertEqual(OurInterpreter(scope).display(tree), "yes")
         tree = langage.parse("{{ if 0 + 1 * 0 + 0 + 1 != 1 * 0 + 1 - 1 * 1 do print 'yes'; endif; }}")
         self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        # If réussi avec != avec calcul avec variable.
+        tree = langage.parse("{{ a := 0 + 0; if a != 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 0 + 1; if a != 0 + 3 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 0 + 1 * 0 + 0 + 1; if a != 1 * 0 + 1 - 1 * 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 0; if a + 0 != 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 0; if a + 1 != 0 + 3 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
+        tree = langage.parse("{{ a := 0; if a + 1 * 0 + 0 + 1 != 1 * 0 + 1 - 1 * 1 do print 'yes'; endif; }}")
+        self.assertEqual(OurInterpreter(scope).display(tree), "yes")
     
-    def testIfSimpleRaté(self):
-        # If raté.
-        tree = langage.parse("{{ if 1 > 2 do print 'yes'; endif; }}")
-        self.assertEqual(OurInterpreter(scope).display(tree), "")
+    def testIfRaté(self):
         # If raté avec boolean.
         tree = langage.parse("{{ if false do print 'yes'; endif; }}")
         self.assertEqual(OurInterpreter(scope).display(tree), "")

@@ -24,7 +24,7 @@ ADD_OPERATION : ADD | SUB
 mul_int : (VARIABLE | INT) (MUL_OPERATION (VARIABLE | INT))*
 MUL_OPERATION : MUL | DIV
 
-bool_expr: (BOOLEAN_TRUE | BOOLEAN_FALSE | inf_expr | sup_expr | eq_expr | dif_expr | (bool_expr OPERATOR bool_expr))
+bool_expr: (VARIABLE | BOOLEAN_TRUE | BOOLEAN_FALSE | inf_expr | sup_expr | eq_expr | dif_expr | (bool_expr OPERATOR bool_expr))
 
 if_expr: ( "if" bool_expr "do" expression_list "endif" )
 
@@ -33,7 +33,7 @@ for_expr: ( "for" VARIABLE "in" (string_list | VARIABLE) "do" expression_list "e
 print_expr: ("print" (string_expression | INT))
 
 assign_expr_arith: ( VARIABLE ":=" (add_expr | INT) )
-assign_expr_var: ( VARIABLE ":=" (string_expression | string_list) )
+assign_expr_var: ( VARIABLE ":=" (string_expression | string_list | BOOLEAN_TRUE | BOOLEAN_FALSE) )
 
 string_expression: (string_expression DOT string_expression) | string | VARIABLE ((MUL|DIV) (VARIABLE | INT))* | INT ((MUL|DIV) (VARIABLE | INT))+
 string_list: "(" string_list_interior ")"

@@ -178,10 +178,13 @@ class OurInterpreter(Interpreter):
                 res = int(pot_int)
             for i in range(1, len(tree.children)-1, 2):
                 operator = tree.children[i].value
+                pot_int = tree.children[i+1].value
+                if (self.scope.search(pot_int) != None):
+                    pot_int = self.scope.search(pot_int)
                 if operator == "*":
-                    res *= int(tree.children[i+1].value)
+                    res *= int(pot_int)
                 else:
-                    res /= int(tree.children[i+1].value)
+                    res /= int(pot_int)
             return res
     
     # Définis le mot print_expr dans la grammaire.
@@ -226,9 +229,12 @@ class OurInterpreter(Interpreter):
             return flag
         else:
             if isinstance(tree.children[0], Token):
-                if (tree.children[0] == "true"):
+                flag = tree.children[0].value
+                if (self.scope.search(flag) != None):
+                    flag = self.scope.search(flag)
+                if (flag == "true"):
                     return True
-                else:
+                elif (flag == "false"):
                     return False
             else:
                 return self.visit(tree.children[0])
@@ -253,7 +259,10 @@ class OurInterpreter(Interpreter):
 
     # Définis le mot assign_expr_var dans la grammaire.
     def assign_expr_var(self, tree):
-        self.scope.add(tree.children[0].value, self.visit(tree.children[1]))
+        if (isinstance(tree.children[1], Token)):
+            self.scope.add(tree.children[0].value, tree.children[1].value)
+        else:
+            self.scope.add(tree.children[0].value, self.visit(tree.children[1]))
 
     # Définis le mot assign_expr_arith dans la grammaire.
     def assign_expr_arith(self, tree):
@@ -266,8 +275,20 @@ class OurInterpreter(Interpreter):
     def string_expression(self, tree):
         res = ""
         if(len(tree.children) > 1):
-            res += self.visit(tree.children[0])
-            res += self.visit(tree.children[2])
+            if (isinstance(tree.children[0], Token)):
+                if((tree.children[0].type == "VARIABLE") or (tree.children[0].type == "INT")):
+                    res = int(tree.children[0].value)
+                    if (self.scope.search(res) != None):
+                        res = self.scope.search(res)
+                    for i in range(1, len(tree.children), 2):
+                        operator = tree.children[i].value
+                        if (operator == "*"):
+                            res *= int(tree.children[i+1].value)
+                        else:
+                            res /= int(tree.children[i+1].value)
+            else:
+                res += self.visit(tree.children[0])
+                res += self.visit(tree.children[2])
         else:
             if (isinstance(tree.children[0], Tree.Tree)):
                 res += self.visit(tree.children[0])
