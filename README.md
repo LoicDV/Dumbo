@@ -135,7 +135,7 @@ Bug trouvé avec le if et le for conernant le fait que ce soit un Token ou un Tr
 ## <u> ___8 Mai 2021.___ </u>
 
 Fin des tests unitaires et de la robustesse du projet. \
-Reste le rapport à terminer pour conclure le projet
+Reste le rapport à terminer pour conclure le projet.
 
 ## <u> ___Fin du projet.___ </u>
 
@@ -151,5 +151,5 @@ Reste le rapport à terminer pour conclure le projet
 	- [x] Exemple 1 (sans bug).
 	- [x] Exemple 2 (sans bug).
 	- [x] Exemple 3 (sans bug).
-- [ ] Rapport.
+- [x] Rapport.
 - [x] Tests.
