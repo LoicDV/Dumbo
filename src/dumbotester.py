@@ -641,7 +641,7 @@ class DumboTester(unittest.TestCase):
         tree = langage.parse("{{ a := true; if false and a and a do print 'yes'; endif; }}")
         scope = Scope()
         self.assertEqual(OurInterpreter(scope).display(tree), "")
-        tree = langage.parse("{{ a := true; b := true; if c and a and b do print 'yes'; endif; }}")
+        tree = langage.parse("{{ a := true; b := true; c := false; if c and a and b do print 'yes'; endif; }}")
         scope = Scope()
         self.assertEqual(OurInterpreter(scope).display(tree), "")
         tree = langage.parse("{{ a := true; c := false; if c and a and true do print 'yes'; endif; }}")
@@ -1085,6 +1085,17 @@ class DumboTester(unittest.TestCase):
         tree = langage.parse("{{ a := ('1', '2', '3'); if false do for elem in a do if elem == 2 do print '2 ok'; endif; endfor; endif; }}")
         scope = Scope()
         self.assertEqual(OurInterpreter(scope).display(tree), "")
+    
+    def testTemplate(self):
+        tree = langage.parse("{{ label := 'realises par Tony Kaye'; liste_label := ('American History X', 'Snowblind', 'Lake of Fire'); }}<html><head><title>Films {{ print label; }}</title></head><body><h1><b>Films {{ print label; }}</b></h1>{{ for nom_film in liste_label do print nom_film; print '<br />'; endfor; }}</body></html>")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "<html><head><title>Films realises par Tony Kaye</title></head><body><h1><b>Films realises par Tony Kaye</b></h1>American History X<br />Snowblind<br />Lake of Fire<br /></body></html>")
+        tree = langage.parse("{{nom := 'Mes plus belles vacances'; listephoto := ('Mon beau bateau.png', 'Belle maman.png', 'Apero.png', 'Coucher de soleil.png');}}<html><head><title>{{ print nom; }}</title></head><body><h1>{{ print nom; }}</h1>{{i := 0; for nom in listephoto do print '<a href =\"'.nom.'\">'.nom.'</a>'; i := i + 1; endfor;}}<br />Il y a {{ print i; }} photos dans l album \"{{ print nom; }}\".</body></html>")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "<html><head><title>Mes plus belles vacances</title></head><body><h1>Mes plus belles vacances</h1><a href =\"Mon beau bateau.png\">Mon beau bateau.png</a><a href =\"Belle maman.png\">Belle maman.png</a><a href =\"Apero.png\">Apero.png</a><a href =\"Coucher de soleil.png\">Coucher de soleil.png</a><br />Il y a 4 photos dans l album \"Mes plus belles vacances\".</body></html>")
+        tree = langage.parse("{{}}{{a := 'ok'; if 1 > 2 do a := 'aie aie aie'; endif; print a;}}")
+        scope = Scope()
+        self.assertEqual(OurInterpreter(scope).display(tree), "ok")
 
 if __name__ == '__main__':
     with open(".\src\lark_grammar.lark", "r") as grammar_file:

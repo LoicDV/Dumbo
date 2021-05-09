@@ -62,7 +62,6 @@ class LC:
             return self
         tmp = self.head.next
         res = self.head
-        self.head = None
         self.head = tmp
         self.size -= 1
         return res

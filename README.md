@@ -129,7 +129,8 @@ Regard vers le template 3. \
 Template 3 compile + sans bug. \
 Rapide bug réslu avec les ``add_expr``, ``sub_expr``, ``mul_expr``, ``div_expr`` qui n'acceptaient pas plus de 2 termes. 
 
-Début des tests unitaires.
+Début des tests unitaires. \
+Bug trouvé avec le if et le for conernant le fait que ce soit un Token ou un Tree.
 
 ## <u> ___8 Mai 2021.___ </u>
 

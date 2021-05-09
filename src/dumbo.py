@@ -86,6 +86,7 @@ class OurInterpreter(Interpreter):
     # Définis le mot expression dans la grammaire.
     def expression(self, tree):
         expression = tree.children[0].data
+        # Avec la grammaire, on a que 4 possibilités.
         if expression == "for_expr" or expression == "if_expr":
             self.scope.other.begin_insert(self.scope.dictio)
             self.visit_children(tree)
@@ -96,11 +97,13 @@ class OurInterpreter(Interpreter):
 
     # Définis le mot add_expr dans la grammaire.
     def add_expr(self, tree):
+        # On initialise avec le premier élément.
         first_under_tree = self.visit(tree.children[0])
         if self.scope.search(first_under_tree) != None:
             res = self.scope.search(first_under_tree)
         else:
             res = first_under_tree
+        # On itère par deux avec en i l'opérateur et en i+1 le prochain entier.
         for i in range(1, len(tree.children), 2):
             next_int = self.visit(tree.children[i+1])
             operator = tree.children[i].value
@@ -112,11 +115,13 @@ class OurInterpreter(Interpreter):
 
     # Définis le mot mul_expr dans la grammaire.
     def mul_expr(self, tree):
+        # On initialise avec le premier élément.
         first_int = tree.children[0]
         if self.scope.search(first_int) != None:
             res = int(self.scope.search(first_int))
         else:
             res = int(first_int)
+        # On itère par deux avec en i l'opérateur et en i+1 le prochain entier.
         for i in range(1, len(tree.children), 2):
             next_int = tree.children[i+1].value
             if (self.scope.search(next_int) != None):
@@ -160,21 +165,24 @@ class OurInterpreter(Interpreter):
 
     # Définis le mot mul_int dans la grammaire.
     def mul_int(self, tree):
+        # De part la grammaire, si on a qu'un element dans children.
         if (len(tree.children) == 1):
-            if isinstance(tree.children[0], Token):
-                if (tree.children[0].type == "INT"):
-                    return int(tree.children[0].value)
-                else:
-                    return int(self.scope.search(tree.children[0].value))
+            if (tree.children[0].type == "INT"):
+                res = int(tree.children[0].value)
+            elif (tree.children[0].type == "VARIABLE"):
+                res = int(self.scope.search(tree.children[0].value))
             else:
-                return self.visit_children(tree)
+                raise InterpreterError(sys.argv[1], tree.children[0], "Doit être une variable ou un int.")
         else:
+            # Plusieurs éléments dans le children.
+            # On initialise la premiere valeur.
             pot_int = tree.children[0].value
             if (self.scope.search(pot_int) != None):
                 res = int(self.scope.search(pot_int))
             else:
                 res = int(pot_int)
-            for i in range(1, len(tree.children)-1, 2):
+            # On itère par deux avec en i l'opérateur et en i+1 le prochain entier.
+            for i in range(1, len(tree.children), 2):
                 operator = tree.children[i].value
                 pot_int = tree.children[i+1].value
                 if (self.scope.search(pot_int) != None):
@@ -183,11 +191,12 @@ class OurInterpreter(Interpreter):
                     res *= int(pot_int)
                 else:
                     res //= int(pot_int)
-            return res
+        return res
     
     # Définis le mot print_expr dans la grammaire.
     def print_expr(self, tree):
         res = self.visit_children(tree)[0]
+        # Si on tombe sur une variable.
         if (self.scope.search(res) != None):
             self.myPrint.add(self.scope.search(res))
         else:
@@ -196,27 +205,33 @@ class OurInterpreter(Interpreter):
     # Définis le mot add_int dans la grammaire.
     def add_int(self, tree):
         if (len(tree.children) == 1):
+            # Element seul donc par la grammaire c'est un token variable ou int. 
             if isinstance(tree.children[0], Token):
-                return int(tree.children[0].value)
+                res = int(tree.children[0].value)
             else:
-                return self.visit_children(tree)[0]
+                res = self.visit_children(tree)[0]
         else:
+            # Plusieurs élements.
+            # On initialise le premier int.
             res = int(self.visit(tree.children[0]))
-            for i in range(1, len(tree.children)-1, 2):
+            # On itère par deux avec en i l'opérateur et en i+1 le prochain entier.
+            for i in range(1, len(tree.children), 2):
                 operator = tree.children[i].value
                 if operator == "+":
                     res += int(self.visit(tree.children[i+1]))
                 else:
                     res -= int(self.visit(tree.children[i+1]))
-            return res
+        return res
 
     # Définis le mot bool_expr dans la grammaire.
     def bool_expr(self, tree):
         if (len(tree.children) > 1):
+            # On initialise le premier booléen.
             if (isinstance(tree.children[0], Token)):
                 flag = tree.children[0].value
             else:
                 flag = self.visit(tree.children[0])
+            # On itère par deux avec en i l'opérateur et en i+1 le prochain booléen.
             for i in range(1, len(tree.children), 2):
                 operator = tree.children[i].value
                 next_flag = self.visit(tree.children[i+1])
@@ -226,16 +241,20 @@ class OurInterpreter(Interpreter):
                     flag = flag and next_flag
             return flag
         else:
+            # Soit une variable, True ou False.
             if isinstance(tree.children[0], Token):
                 flag = tree.children[0].value
                 if (self.scope.search(flag) != None):
                     flag = self.scope.search(flag)
                 if (flag == "true"):
-                    return True
+                    flag = True
                 elif (flag == "false"):
-                    return False
+                    flag = False
+                else:
+                    raise InterpreterError(sys.argv[1], tree.children[0], "Doit être une variable ou un booléen.")
             else:
-                return self.visit(tree.children[0])
+                flag = self.visit(tree.children[0])
+        return flag
 
     # Définis le mot if_expr dans la grammaire.
     def if_expr(self, tree):
@@ -245,16 +264,22 @@ class OurInterpreter(Interpreter):
 
     # Définis le mot for_expr dans la grammaire.
     def for_expr(self, tree):
+        # var : Token, liste_elem : Token/Tree, liste_expr: Tree.
         var, liste_elem, liste_expr = tree.children
+        var_stock = self.scope.search(tree.children[0])
         if (isinstance(liste_elem, Token)):
+            # Si liste_elem est un Token.
             for i in range(len(self.scope.search(liste_elem))):
                 self.scope.add(var.value, self.scope.search(liste_elem)[i])
                 self.visit_children(liste_expr)
+                self.scope.add(var.value, var_stock)
                 self.scope.dictio = self.scope.other.head.data
         else:
+            # Si liste_elem est un Tree.
             for elem in liste_elem.children[0].children:
                 self.scope.add(var.value, self.visit_children(elem)[0])
                 self.visit_children(liste_expr)
+                self.scope.add(var.value, var_stock)
                 self.scope.dictio = self.scope.other.head.data
 
     # Définis le mot assign_expr dans la grammaire.
@@ -279,15 +304,17 @@ class OurInterpreter(Interpreter):
     def string_expression(self, tree):
         res = ""
         if(len(tree.children) > 1):
+            # Cas des plusieurs fils.
             if (isinstance(tree.children[0], Token)):
+                # Opération arithmétique avec * et /.
                 if((tree.children[0].type == "VARIABLE") or (tree.children[0].type == "INT")):
+                    # On initialise le premier int.
                     res = tree.children[0].value
                     if (self.scope.search(res) != None):
                         res = int(self.scope.search(res))
-                    else :
+                    else:
                         res = int(res)
-                    if (self.scope.search(res) != None):
-                        res = int(self.scope.search(res))
+                    # On itère par deux avec en i l'opérateur et en i+1 le prochain int.
                     for i in range(1, len(tree.children), 2):
                         operator = tree.children[i].value
                         pot_int = tree.children[i+1].value
@@ -298,12 +325,16 @@ class OurInterpreter(Interpreter):
                         else:
                             res //= int(pot_int)
             else:
+                # Concaténation de 2 Tree.
                 res += self.visit(tree.children[0])
                 res += self.visit(tree.children[2])
         else:
+            # Un seul fils.
             if (isinstance(tree.children[0], Tree.Tree)):
+                # String.
                 res += self.visit(tree.children[0])
             else:
+                # Variable
                 res += str(self.scope.search(tree.children[0].value))
         return res
 
@@ -330,11 +361,7 @@ class InterpreterError(Exception):
     
     # Construit notre message d'erreur.
     def __init__(self, file, tree, message):
-        super(InterpreterError, self).__init__(file + " " + self.get_line_number(tree) + ": " + message)
-
-    # Recupère la ligne ainsi que la colonne de l'erreur.
-    def get_line_number(self, tree):
-        return "ligne " + str(tree.line) + ", colonne " + str(tree.column) + "."
+        super(InterpreterError, self).__init__("In " + file + ": " + str(tree) + ": " + message)
 
 if __name__ == '__main__':
 
@@ -358,7 +385,6 @@ if __name__ == '__main__':
                         print(result, end = "")
                 # Exception qu'il peut y avoir (mauvais caractère ou mauvaise interprétation)
                 except UnexpectedToken as e:
-                    print("error in " + file + ".", file=sys.stderr)
-                    raise
+                    print("Erreur dans la syntaxe.")
                 except InterpreterError as e:
                     print(e, file=sys.stderr)
